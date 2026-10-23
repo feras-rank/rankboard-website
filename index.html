@@ -1,0 +1,314 @@
+<!doctype html>
+<html lang="en" dir="ltr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Rankboard</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<meta name="description" content="Rankboard is Saudi Arabia's weekly food chart. Vote head-to-head on Riyadh's best burgers, pizza, sushi and bakeries. The chart drops every Thursday at 6pm.">
+<link rel="icon" href="img/favicon.png">
+<link rel="apple-touch-icon" href="img/apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,800;1,9..144,400;1,9..144,800;1,9..144,900&family=JetBrains+Mono:wght@400;700&family=Readex+Pro:wght@400;700&family=Cairo:wght@400;600;700&display=swap">
+<style>
+/* Layout: one dark column; hero beside a phone, then the weekly cycle as a 3-step sequence, then trust, then owners. */
+:root {
+  color-scheme: dark;
+  --bg: #0e0e10;
+  --surface: #17171a;
+  --surface-2: #1f1f23;
+  --line: rgba(245,242,234,0.10);
+  --ink: #f5f2ea;
+  --ink-2: #cfcac0;
+  --muted: #a39e92;
+  --accent: #e8ff3a;
+  --on-accent: #0e0e10;
+  --up: #6aff9e;
+  --down: #ff7b6b;
+  --display: 'Fraunces', Georgia, 'Times New Roman', serif;
+  --ui: -apple-system, 'SF Pro Text', 'Segoe UI', Roboto, Arial, sans-serif;
+  --mono: 'JetBrains Mono', ui-monospace, Menlo, Consolas, monospace;
+  --ar-display: 'Readex Pro', 'Cairo', Tahoma, sans-serif;
+  --ar-ui: 'Cairo', 'Readex Pro', Tahoma, sans-serif;
+}
+* { box-sizing: border-box; }
+html { background: var(--bg); }
+body {
+  margin: 0; background: var(--bg); color: var(--ink);
+  font: 400 17px/1.6 var(--ui);
+  -webkit-font-smoothing: antialiased;
+}
+html[lang="ar"] body { font-family: var(--ar-ui); }
+
+/* Language switching: every text exists in both languages; only one shows. */
+html[lang="en"] [lang="ar"]:not(html) { display: none !important; }
+html[lang="ar"] [lang="en"]:not(html) { display: none !important; }
+
+.wrap {
+  max-width: 1120px; margin: 0 auto;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+}
+a { color: var(--accent); text-underline-offset: 3px; }
+a:focus-visible, button:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; border-radius: 6px; }
+
+/* Header */
+header.site { padding-block: 22px; }
+header.site .wrap { display: flex; align-items: center; justify-content: space-between; gap: 16px; }
+.wordmark { font: italic 800 34px/1 var(--display); font-variation-settings: "opsz" 144; letter-spacing: -0.04em; color: var(--ink); text-decoration: none; }
+.wordmark span { color: var(--accent); }
+.lang-switch {
+  min-height: 44px; padding: 0 18px; border-radius: 999px; cursor: pointer;
+  background: var(--surface-2); color: var(--ink); border: 1px solid var(--line);
+  font: 600 15px/1 var(--ar-ui);
+}
+html[lang="ar"] .lang-switch { font-family: var(--ui); }
+
+/* Hero */
+.hero { padding-block: 32px 72px; }
+.hero .wrap { display: grid; grid-template-columns: minmax(0, 1.15fr) minmax(0, 0.85fr); gap: 56px; align-items: center; }
+.eyebrow { font: 400 14px/1.4 var(--mono); color: var(--accent); letter-spacing: 0.02em; margin: 0 0 18px; }
+html[lang="ar"] .eyebrow { font-family: var(--ar-ui); font-weight: 600; }
+h1 {
+  margin: 0; font: 800 clamp(44px, 7vw, 84px)/0.98 var(--display);
+  font-variation-settings: "opsz" 144; letter-spacing: -0.035em; text-wrap: balance;
+}
+h1 em { font-style: italic; font-weight: 400; color: var(--accent); }
+html[lang="ar"] h1 { font-family: var(--ar-display); font-weight: 700; line-height: 1.25; letter-spacing: 0; }
+html[lang="ar"] h1 em { font-style: normal; }
+.lede { margin: 22px 0 0; max-width: 34ch; font-size: 20px; color: var(--ink-2); }
+.drop-clock {
+  margin-top: 32px; display: inline-flex; flex-wrap: wrap; align-items: baseline; gap: 6px 14px;
+  padding: 14px 20px; border-radius: 18px; background: var(--surface); border: 1px solid var(--line);
+}
+.drop-clock .label { font-size: 14px; color: var(--muted); }
+.drop-clock .time { font: 700 22px/1 var(--mono); color: var(--ink); font-variant-numeric: tabular-nums; direction: ltr; unicode-bidi: isolate; }
+.status { margin: 18px 0 0; font-size: 15px; color: var(--muted); }
+
+.phone {
+  width: min(100%, 300px); margin-inline: auto; aspect-ratio: 390 / 844; max-width: 100%;
+  border-radius: 44px; padding: 10px; background: #222226;
+  box-shadow: 0 0 0 1px rgba(245,242,234,0.10), 0 40px 80px -30px rgba(232,255,58,0.18);
+}
+.phone img { display: block; width: 100%; height: 100%; object-fit: cover; object-position: top; border-radius: 34px; }
+
+/* Sections */
+section.block { padding-block: 72px; border-top: 1px solid var(--line); }
+h2 {
+  margin: 0; font: 800 clamp(32px, 4.4vw, 48px)/1.05 var(--display);
+  letter-spacing: -0.025em; text-wrap: balance; max-width: 22ch;
+}
+h2 em { font-style: italic; font-weight: 400; }
+html[lang="ar"] h2 { font-family: var(--ar-display); font-weight: 700; line-height: 1.3; letter-spacing: 0; }
+html[lang="ar"] h2 em { font-style: normal; color: var(--accent); }
+.section-lede { margin: 16px 0 0; max-width: 58ch; color: var(--ink-2); }
+
+/* The weekly cycle: a real sequence, so it is numbered. */
+.cycle { margin-top: 48px; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 32px; }
+.step { display: flex; flex-direction: column; gap: 20px; min-width: 0; }
+.step .phone { width: min(100%, 250px); margin-inline: 0; }
+.step-num { font: italic 900 56px/0.8 var(--display); color: var(--accent); }
+html[lang="ar"] .step-num { font-family: var(--ar-display); font-style: normal; font-weight: 700; }
+.step h3 { margin: 0; font: 700 22px/1.25 var(--ui); }
+html[lang="ar"] .step h3 { font-family: var(--ar-ui); }
+.step p { margin: 6px 0 0; color: var(--ink-2); font-size: 16px; }
+
+.cats { margin-top: 28px; display: flex; flex-wrap: wrap; gap: 10px; }
+.cat { padding: 10px 20px; border-radius: 999px; background: var(--surface-2); font-weight: 600; font-size: 16px; }
+.cat:first-child { background: var(--accent); color: var(--on-accent); }
+
+/* Trust: the rules of the chart */
+.rules { margin-top: 40px; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0 48px; }
+.rule { padding-block: 22px; border-top: 1px solid var(--line); min-width: 0; }
+.rule h3 { margin: 0; font: 700 19px/1.35 var(--ui); }
+html[lang="ar"] .rule h3 { font-family: var(--ar-ui); }
+.rule p { margin: 6px 0 0; color: var(--ink-2); font-size: 16px; max-width: 52ch; }
+.mono-fig { font-family: var(--mono); color: var(--accent); direction: ltr; unicode-bidi: isolate; }
+
+/* Owners */
+.owners { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 48px; align-items: start; }
+.owner-list { margin: 0; padding: 0; list-style: none; display: grid; gap: 14px; }
+.owner-list li { padding: 20px 22px; border-radius: 18px; background: var(--surface); border: 1px solid var(--line); }
+.owner-list strong { display: block; font-size: 18px; }
+.owner-list span { display: block; margin-top: 4px; color: var(--ink-2); font-size: 16px; }
+
+.contact { margin-top: 28px; display: flex; flex-wrap: wrap; gap: 10px 24px; font-size: 16px; color: var(--muted); }
+.contact b { color: var(--ink); font-weight: 600; font-family: var(--mono); font-size: 15px; direction: ltr; unicode-bidi: isolate; }
+
+footer.site { padding-block: 40px 56px; border-top: 1px solid var(--line); color: var(--muted); font-size: 14px; }
+footer.site .wrap { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 16px; }
+footer.site nav { display: flex; flex-wrap: wrap; gap: 20px; }
+footer.site a { color: var(--ink-2); }
+
+@media (max-width: 860px) {
+  .hero .wrap, .owners { grid-template-columns: minmax(0, 1fr); gap: 40px; }
+  .cycle { grid-template-columns: minmax(0, 1fr); gap: 48px; }
+  .step { flex-direction: row; align-items: flex-start; gap: 20px; }
+  .step .phone { width: 42%; flex: 0 0 42%; border-radius: 28px; padding: 6px; }
+  .step .phone img { border-radius: 22px; }
+  .rules { grid-template-columns: minmax(0, 1fr); }
+  section.block { padding-block: 56px; }
+}
+@media (max-width: 420px) {
+  .lede { font-size: 18px; }
+}
+@media (prefers-reduced-motion: no-preference) {
+  .hero .phone { animation: rise 700ms cubic-bezier(.2,.7,.2,1) both; }
+  @keyframes rise { from { transform: translateY(16px); } to { transform: none; } }
+}
+</style>
+</head>
+<body>
+
+
+<header class="site">
+  <div class="wrap">
+    <a class="wordmark" href="#top" aria-label="Rankboard home">rank<span>.</span></a>
+    <button class="lang-switch" id="lang-switch" type="button">
+      <span lang="en">العربية</span><span lang="ar">English</span>
+    </button>
+  </div>
+</header>
+
+<main id="top">
+  <section class="hero">
+    <div class="wrap">
+      <div>
+        <p class="eyebrow"><span lang="en">Saudi Arabia's food chart</span><span lang="ar">قائمة الطعام في السعودية</span></p>
+        <h1>
+          <span lang="en">The city's taste, ranked <em>weekly.</em></span>
+          <span lang="ar">ذوق المدينة، يتجدد <em>كل أسبوع.</em></span>
+        </h1>
+        <p class="lede">
+          <span lang="en">No stars. No essays. Just head-to-head votes, and a chart of the places Riyadh keeps choosing.</span>
+          <span lang="ar">بدون نجوم. بدون مراجعات طويلة. فقط أصوات مباشرة بين مطعمين، وقائمة بالأماكن اللي الرياض تختارها.</span>
+        </p>
+        <div class="drop-clock" aria-live="off">
+          <span class="label"><span lang="en">Next Drop · Thursday 6pm</span><span lang="ar">النشرة القادمة · الخميس ٦ مساءً</span></span>
+          <span class="time" id="drop-time">Thu 18:00</span>
+        </div>
+        <p class="status"><span lang="en">Launching in Riyadh on iPhone and Android.</span><span lang="ar">قريباً في الرياض على آيفون وأندرويد.</span></p>
+      </div>
+      <div class="phone">
+        <img lang="en" src="img/vote-en.webp" alt="Rankboard voting screen: Falcon Flame Burgers versus The Brioche Club, with a button for haven't tried one" width="540" height="1169">
+        <img lang="ar" src="img/vote-ar.webp" alt="شاشة التصويت في رانك بورد: مطعمان وجهاً لوجه" width="540" height="1169">
+      </div>
+    </div>
+  </section>
+
+  <section class="block" id="how">
+    <div class="wrap">
+      <h2><span lang="en">One week, <em>three moves.</em></span><span lang="ar">أسبوع واحد، <em>ثلاث خطوات.</em></span></h2>
+      <div class="cycle">
+        <div class="step">
+          <div class="phone">
+            <img lang="en" src="img/vote-en.webp" alt="Two restaurants side by side in a matchup" width="540" height="1169" loading="lazy">
+            <img lang="ar" src="img/vote-ar.webp" alt="مطعمان في مواجهة" width="540" height="1169" loading="lazy">
+          </div>
+          <div>
+            <div class="step-num">1</div>
+            <h3><span lang="en">Pick between two</span><span lang="ar">اختر بين اثنين</span></h3>
+            <p><span lang="en">You see two places you might know. Tap the one you enjoyed more, or skip if you haven't tried one.</span><span lang="ar">يظهر لك مكانان. اختر اللي عجبك أكثر، أو تخطَّ إذا ما جربت واحد منهم.</span></p>
+          </div>
+        </div>
+        <div class="step">
+          <div class="phone">
+            <img lang="en" src="img/chart-en.webp" alt="The live burger chart with rank moves" width="540" height="1169" loading="lazy">
+            <img lang="ar" src="img/chart-ar.webp" alt="قائمة البرجر مع تغيّرات الترتيب" width="540" height="1169" loading="lazy">
+          </div>
+          <div>
+            <div class="step-num">2</div>
+            <h3><span lang="en">The chart moves</span><span lang="ar">القائمة تتحرك</span></h3>
+            <p><span lang="en">Every vote nudges both ratings. All week you can watch places climb and slip.</span><span lang="ar">كل صوت يحرّك تقييم المطعمين. طوال الأسبوع تشوف مين يصعد ومين ينزل.</span></p>
+          </div>
+        </div>
+        <div class="step">
+          <div class="phone">
+            <img lang="en" src="img/place-en.webp" alt="A restaurant page showing its rank history" width="540" height="1169" loading="lazy">
+            <img lang="ar" src="img/place-ar.webp" alt="صفحة مطعم مع تاريخ ترتيبه" width="540" height="1169" loading="lazy">
+          </div>
+          <div>
+            <div class="step-num">3</div>
+            <h3><span lang="en">Thursday, 6pm: the Drop</span><span lang="ar">الخميس ٦ مساءً: النشرة</span></h3>
+            <p><span lang="en">The official weekly chart locks and publishes, just before the weekend. See who climbed, who fell, and who's new.</span><span lang="ar">تُقفل القائمة الرسمية وتُنشر قبل الويكند. شوف مين صعد ومين نزل ومين جديد.</span></p>
+          </div>
+        </div>
+      </div>
+      <div class="cats" aria-label="Categories">
+        <span class="cat"><span lang="en">Burger</span><span lang="ar">برجر</span></span>
+        <span class="cat"><span lang="en">Pizza</span><span lang="ar">بيتزا</span></span>
+        <span class="cat"><span lang="en">Sushi</span><span lang="ar">سوشي</span></span>
+        <span class="cat"><span lang="en">Bakery</span><span lang="ar">مخبوزات</span></span>
+      </div>
+    </div>
+  </section>
+
+  <section class="block" id="restaurants">
+    <div class="wrap owners">
+      <div>
+        <h2><span lang="en">For <em>restaurant</em> owners</span><span lang="ar">لأصحاب <em>المطاعم</em></span></h2>
+        <p class="section-lede"><span lang="en">Your rank is earned by votes. What you can do is make sure the right people find you, and understand why they choose you.</span><span lang="ar">ترتيبك تكسبه بالأصوات. اللي تقدر تسويه إنك توصل للناس الصح، وتفهم ليش يختارونك.</span></p>
+        <div class="contact">
+          <span><span lang="en">Restaurants:</span><span lang="ar">للمطاعم:</span> <b class="email" data-email="owners">owners@getrankboard.com</b></span>
+          <span><span lang="en">Support:</span><span lang="ar">الدعم:</span> <b class="email" data-email="support">support@getrankboard.com</b></span>
+        </div>
+      </div>
+      <ul class="owner-list">
+        <li><strong><span lang="en">Claim your place, free</span><span lang="ar">وثّق مطعمك مجاناً</span></strong><span><span lang="en">Verify ownership with your commercial registration, then update your photos, hours and best seller.</span><span lang="ar">وثّق ملكيتك بالسجل التجاري، وحدّث صورك وأوقات العمل والطبق الأشهر.</span></span></li>
+        <li><strong><span lang="en">Boost</span><span lang="ar">الظهور المميز</span></strong><span><span lang="en">Be the featured place in your category for nearby voters, for two weeks at a time.</span><span lang="ar">كن المطعم المميز في فئتك للمصوّتين القريبين منك، لمدة أسبوعين.</span></span></li>
+        <li><strong><span lang="en">Owner dashboard</span><span lang="ar">لوحة المالك</span></strong><span><span lang="en">See your win rate, your rivals, how many people nearby haven't tried you yet, and what voters praise.</span><span lang="ar">شوف نسبة فوزك، ومنافسيك، وكم شخص قريب منك ما جربك، وإيش يمدحون فيك.</span></span></li>
+      </ul>
+    </div>
+  </section>
+</main>
+
+<footer class="site">
+  <div class="wrap">
+    <span>© <span id="year">2026</span> Rankboard · <span lang="en">Riyadh, Saudi Arabia</span><span lang="ar">الرياض، المملكة العربية السعودية</span></span>
+    <nav>
+      <a href="privacy.html"><span lang="en">Privacy policy</span><span lang="ar">سياسة الخصوصية</span></a>
+    </nav>
+  </div>
+</footer>
+
+<script>
+(function () {
+  var root = document.documentElement;
+  function setLang(l) {
+    root.lang = l; root.dir = l === 'ar' ? 'rtl' : 'ltr';
+    try { localStorage.setItem('rb-lang', l); } catch (e) {}
+    renderClock();
+  }
+  var saved = null;
+  try { saved = localStorage.getItem('rb-lang'); } catch (e) {}
+  var hash = (location.hash || '').replace('#', '');
+  var initial = hash === 'ar' || hash === 'en' ? hash
+    : saved || ((navigator.language || '').toLowerCase().indexOf('ar') === 0 ? 'ar' : 'en');
+  document.getElementById('lang-switch').addEventListener('click', function () {
+    setLang(root.lang === 'ar' ? 'en' : 'ar');
+  });
+
+  // Countdown to the next Drop: Thursday 18:00 Asia/Riyadh (UTC+3, no daylight saving) = Thursday 15:00 UTC.
+  function nextDrop(now) {
+    var d = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate(), 15, 0, 0));
+    var add = (4 - d.getUTCDay() + 7) % 7;
+    d.setUTCDate(d.getUTCDate() + add);
+    if (d <= now) d.setUTCDate(d.getUTCDate() + 7);
+    return d;
+  }
+  function renderClock() {
+    var now = new Date(), ms = nextDrop(now) - now;
+    var days = Math.floor(ms / 864e5), hrs = Math.floor(ms / 36e5) % 24, mins = Math.floor(ms / 6e4) % 60;
+    var ar = root.lang === 'ar';
+    var txt = ar ? (days + ' يوم ' + hrs + ' س ' + mins + ' د') : (days + 'd ' + hrs + 'h ' + mins + 'm');
+    document.getElementById('drop-time').textContent = txt;
+  }
+  document.getElementById('year').textContent = new Date().getFullYear();
+  setLang(initial);
+  setInterval(renderClock, 30000);
+})();
+</script>
+
+</body>
+</html>
