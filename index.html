@@ -4,8 +4,16 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Rankboard</title>
-<meta name="claude:viewport-fit-sides" content="cover">
 <meta name="description" content="Rankboard is Saudi Arabia's weekly food chart. Vote head-to-head on Riyadh's best burgers, pizza, sushi and bakeries. The chart drops every Thursday at 6pm.">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Rankboard">
+<meta property="og:title" content="Rankboard: Riyadh's weekly food chart">
+<meta property="og:description" content="Rankboard is Saudi Arabia's weekly food chart. Vote head-to-head on Riyadh's best burgers, pizza, sushi and bakeries. The chart drops every Thursday at 6pm.">
+<meta property="og:url" content="https://getrankboard.com/">
+<meta property="og:image" content="https://getrankboard.com/img/share.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
 <link rel="icon" href="img/favicon.png">
 <link rel="apple-touch-icon" href="img/apple-touch-icon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -164,7 +172,7 @@ footer.site a { color: var(--ink-2); }
 
 <header class="site">
   <div class="wrap">
-    <a class="wordmark" href="#top" aria-label="Rankboard home">rank<span>.</span></a>
+    <a class="wordmark" href="#top" aria-label="Rankboard home" dir="ltr">rank<span>.</span></a>
     <button class="lang-switch" id="lang-switch" type="button">
       <span lang="en">العربية</span><span lang="ar">English</span>
     </button>
@@ -255,9 +263,9 @@ footer.site a { color: var(--ink-2); }
         </div>
       </div>
       <ul class="owner-list">
-        <li><strong><span lang="en">Claim your place, free</span><span lang="ar">وثّق مطعمك مجاناً</span></strong><span><span lang="en">Verify ownership with your commercial registration, then update your photos, hours and best seller.</span><span lang="ar">وثّق ملكيتك بالسجل التجاري، وحدّث صورك وأوقات العمل والطبق الأشهر.</span></span></li>
-        <li><strong><span lang="en">Boost</span><span lang="ar">الظهور المميز</span></strong><span><span lang="en">Be the featured place in your category for nearby voters, for two weeks at a time.</span><span lang="ar">كن المطعم المميز في فئتك للمصوّتين القريبين منك، لمدة أسبوعين.</span></span></li>
-        <li><strong><span lang="en">Owner dashboard</span><span lang="ar">لوحة المالك</span></strong><span><span lang="en">See your win rate, your rivals, how many people nearby haven't tried you yet, and what voters praise.</span><span lang="ar">شوف نسبة فوزك، ومنافسيك، وكم شخص قريب منك ما جربك، وإيش يمدحون فيك.</span></span></li>
+        <li><strong><span lang="en">Claim your place, free</span><span lang="ar">وثّق مطعمك مجاناً</span></strong><span><span lang="en">Verify ownership in the app with your commercial registration, then update your restaurant's photo. For other changes to your listing, email <bdi>support@getrankboard.com</bdi>.</span><span lang="ar">وثّق ملكيتك من التطبيق بالسجل التجاري، وبعدها حدّث صورة مطعمك. لأي تعديل ثاني على صفحة مطعمك، راسل <bdi>support@getrankboard.com</bdi>.</span></span></li>
+        <li><strong><span lang="en">Boost</span><span lang="ar">الظهور المميز</span></strong><span><span lang="en">Featured to every voter in Riyadh in your category, two weeks at a time. A Boost never changes your rank.</span><span lang="ar">مطعمك مميّز أمام كل المصوّتين في الرياض في فئتك، لمدة أسبوعين في كل مرة. والـ Boost ما يغيّر ترتيبك أبداً.</span></span></li>
+        <li><strong><span lang="en">Owner dashboard</span><span lang="ar">لوحة المالك</span></strong><span><span lang="en">See your live position, your win rate against your rivals, how many voters who saw you in a matchup haven't tried you yet, and what voters praise and complain about.</span><span lang="ar">شوف ترتيبك المباشر، ونسبة فوزك على منافسيك، وكم من المصوّتين اللي شافوك في مواجهة ما جربوك، وإيش يمدحون فيك وإيش ينتقدون.</span></span></li>
       </ul>
     </div>
   </section>
@@ -268,6 +276,7 @@ footer.site a { color: var(--ink-2); }
     <span>© <span id="year">2026</span> <span lang="en">lawhat alsadara Company</span><span lang="ar">شركة لوحة الصدارة</span> · <span lang="en">Riyadh, Saudi Arabia</span><span lang="ar">الرياض، المملكة العربية السعودية</span></span>
     <nav>
       <a href="privacy.html"><span lang="en">Privacy policy</span><span lang="ar">سياسة الخصوصية</span></a>
+      <a href="support.html"><span lang="en">Support</span><span lang="ar">الدعم</span></a>
     </nav>
   </div>
 </footer>
@@ -297,11 +306,19 @@ footer.site a { color: var(--ink-2); }
     if (d <= now) d.setUTCDate(d.getUTCDate() + 7);
     return d;
   }
+  // Arabic counts the days in words that change with the number: يوم (1), يومان (2), N أيام (3–10).
+  // The countdown is never more than 6 days; under a day the days part is left out.
+  function arDays(n) {
+    if (n === 0) return '';
+    if (n === 1) return 'يوم ';
+    if (n === 2) return 'يومان ';
+    return n + ' أيام ';
+  }
   function renderClock() {
     var now = new Date(), ms = nextDrop(now) - now;
     var days = Math.floor(ms / 864e5), hrs = Math.floor(ms / 36e5) % 24, mins = Math.floor(ms / 6e4) % 60;
     var ar = root.lang === 'ar';
-    var txt = ar ? (days + ' يوم ' + hrs + ' س ' + mins + ' د') : (days + 'd ' + hrs + 'h ' + mins + 'm');
+    var txt = ar ? (arDays(days) + hrs + ' س ' + mins + ' د') : (days + 'd ' + hrs + 'h ' + mins + 'm');
     document.getElementById('drop-time').textContent = txt;
   }
   document.getElementById('year').textContent = new Date().getFullYear();
